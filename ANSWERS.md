@@ -1,4 +1,5 @@
 ANS1-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -28,9 +29,10 @@ int main() {
 
     return 0;
 }
-
+```
 
 ANS2-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -53,9 +55,10 @@ int main() {
 
     return 0;
 }
-
+```
 
 ANS3-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -72,9 +75,10 @@ int main() {
 
     return 0;
 }
-
+```
 
 ANS4-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -92,14 +96,27 @@ int main() {
 
     return 0;
 }
+```
 
-
-ANS5- 10
-ANS6- 1 5
-ANS7- 20
-ANS8- 2 4
+ANS5-
+```cpp
+10
+```
+ANS6- 
+```cpp
+1 5
+```
+ANS7- 
+```cpp
+20
+```
+ANS8-
+```cpp
+2 4
+```
 
 ANS9-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -122,9 +139,10 @@ int main() {
 
     return 0;
 }
-
+```
 
 ANS10-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -142,16 +160,22 @@ int main() {
 
     return 0;
 }
-
+```
 
 ANS11-
+```cpp
 1 2 4 4
 1 4 3 4 5
-
+```
 
 ANS12-
+```cpp
 10 11
 12 12
 12 12
+```
 
-ANS13- 40 10
+ANS13- 
+```cpp
+40 10
+```
