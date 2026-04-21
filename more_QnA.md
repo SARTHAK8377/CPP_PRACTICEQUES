@@ -117,19 +117,6 @@ int main() {
     return 0;
 }
 ```
-SAMPLE OUTPUT :-
-```
-===== MENU =====
-1. Add Student
-2. Modify Student
-3. Display All Students
-4. Exit
-Enter choice: 1
-
-Enter ID: 101
-Enter Name: Sarthak
-Enter marks (3 subjects): 85 90 88
-```
 
 # Employee Salary Management System Using File Handling
 
@@ -139,206 +126,104 @@ Scenario: You need to build an employee salary management system that reads empl
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
-#include <iomanip>
 using namespace std;
 
 class Employee {
 private:
-    string emp_id, name;
-    double basic_salary, total_salary;
-    
-public:
-    // Default constructor
-    Employee() : emp_id(""), name(""), basic_salary(0), total_salary(0) {}
-    
-    // Parameterized constructor
-    Employee(string id, string n, double salary) 
-        : emp_id(id), name(n), basic_salary(salary), total_salary(0) {
-        calculateSalary();  // Auto-calculate on creation
-    }
-    
-    // Getters & Setters
-    string getId() { return emp_id; }
-    string getName() { return name; }
-    double getBasic() { return basic_salary; }
-    double getTotal() { return total_salary; }
-    
-    // Calculate salary with business logic
-    void calculateSalary() {
-        // Business Rules:
-        // HRA: 20% of basic, DA: 40% of basic, Bonus: 10% if salary > 50000
-        double hra = basic_salary * 0.20;
-        double da = basic_salary * 0.40;
-        double bonus = (basic_salary > 50000) ? basic_salary * 0.10 : 0;
-        double deduction = basic_salary * 0.05;  // 5% tax
-        
-        total_salary = basic_salary + hra + da + bonus - deduction;
-    }
-    
-    // Display employee
-    void display() {
-        cout << fixed << setprecision(2);
-        cout << "\nID: " << emp_id 
-             << ", Name: " << name 
-             << ", Basic: ₹" << basic_salary
-             << ", Total: ₹" << total_salary << endl;
-    }
-    
-    // Save to file
-    void saveToFile(ofstream& out) {
-        out << emp_id << "," << name << "," << basic_salary << "," << total_salary << endl;
-    }
-    
-    // Load from file (static method)
-    static Employee loadFromFile(string line) {
-        size_t pos1 = line.find(',');
-        size_t pos2 = line.find(',', pos1 + 1);
-        size_t pos3 = line.find(',', pos2 + 1);
-        
-        string id = line.substr(0, pos1);
-        string name = line.substr(pos1 + 1, pos2 - pos1 - 1);
-        double salary = stod(line.substr(pos2 + 1, pos3 - pos2 - 1));
-        
-        return Employee(id, name, salary);
-    }
-};
+    int employee_id;
+    string name;
+    float salary;
 
-class SalaryManager {
-private:
-    vector<Employee> employees;
-    const string FILENAME = "employees.txt";
-    
 public:
-    // Load employees from file
-    bool loadFromFile() {
-        ifstream file(FILENAME);
-        if (!file.is_open()) {
-            cout << "❌ File not found! Creating new file...\n";
-            return false;
-        }
-        
-        employees.clear();
-        string line;
-        while (getline(file, line)) {
-            if (line.empty()) continue;
-            try {
-                Employee emp = Employee::loadFromFile(line);
-                employees.push_back(emp);
-            } catch (...) {
-                cout << "⚠️ Skipping invalid line: " << line << endl;
-            }
-        }
-        file.close();
-        cout << "✅ Loaded " << employees.size() << " employees from file\n";
-        return true;
+    // Default Constructor
+    Employee() {
+        employee_id = 0;
+        name = "Unknown";
+        salary = 0;
     }
-    
-    // Save employees to file
-    void saveToFile() {
-        ofstream file(FILENAME);
-        if (!file.is_open()) {
-            cout << "❌ Cannot create file!\n";
-            return;
-        }
-        
-        for (const auto& emp : employees) {
-            emp.saveToFile(file);
-        }
-        file.close();
-        cout << "💾 Data saved to " << FILENAME << endl;
+
+    // Parameterized Constructor
+    Employee(int id, string n, float s) {
+        employee_id = id;
+        name = n;
+        salary = s;
     }
-    
-    // Add new employee
-    void addEmployee() {
-        string id, name;
-        double salary;
-        
-        cout << "Enter ID: "; cin >> id;
-        cout << "Enter Name: "; cin.ignore(); getline(cin, name);
-        cout << "Enter Basic Salary: "; cin >> salary;
-        
-        Employee emp(id, name, salary);
-        employees.push_back(emp);
-        cout << "✅ Employee added & salary calculated!\n";
-        emp.display();
+
+    // Calculate Salary (Business Logic)
+    void calculateSalary() {
+        float bonus = 0.10 * salary;      // 10% bonus
+        float deduction = 0.05 * salary;  // 5% deduction
+        salary = salary + bonus - deduction;
     }
-    
-    // Display all
-    void displayAll() {
-        if (employees.empty()) {
-            cout << "No employees found!\n";
-            return;
-        }
-        cout << "\n=== ALL EMPLOYEES ===\n";
-        for (const auto& emp : employees) {
-            emp.display();
-        }
+
+    // Display Employee
+    void display() {
+        cout << "ID: " << employee_id 
+             << ", Name: " << name 
+             << ", Salary: " << salary << endl;
     }
-    
-    // Calculate & update all salaries
-    void processAllSalaries() {
-        for (auto& emp : employees) {
-            emp.calculateSalary();  // Recalculate
-        }
-        cout << "✅ All salaries updated!\n";
-    }
+
+    // Getter methods
+    int getID() { return employee_id; }
+    string getName() { return name; }
+    float getSalary() { return salary; }
+
+    // Setter for salary
+    void setSalary(float s) { salary = s; }
 };
 
 int main() {
-    SalaryManager manager;
-    
-    cout << "🏢 Employee Salary Management System\n";
-    cout << "====================================\n";
-    
-    // Demo: Load existing data
-    manager.loadFromFile();
-    
-    int choice;
-    do {
-        cout << "\n1. Add Employee\n2. Display All\n3. Process Salaries\n4. Save to File\n5. Exit\nChoice: ";
-        cin >> choice;
-        
-        switch (choice) {
-            case 1: manager.addEmployee(); break;
-            case 2: manager.displayAll(); break;
-            case 3: manager.processAllSalaries(); break;
-            case 4: manager.saveToFile(); break;
-            case 5: cout << "👋 Goodbye!\n"; break;
-            default: cout << "Invalid choice!\n";
-        }
-    } while (choice != 5);
-    
-    manager.saveToFile();  // Auto-save on exit
+    vector<Employee> employees;
+
+    ifstream infile("employees.txt");
+
+    // Exception Handling (File Check)
+    if (!infile) {
+        cout << "Error: File not found or cannot be opened!\n";
+        return 1;
+    }
+
+    // Reading from file
+    int id;
+    string name;
+    float salary;
+
+    while (infile >> id >> name >> salary) {
+        Employee emp(id, name, salary);
+        employees.push_back(emp);
+    }
+
+    infile.close();
+
+    // Processing salaries
+    for (int i = 0; i < employees.size(); i++) {
+        employees[i].calculateSalary();
+    }
+
+    // Writing updated data to file
+    ofstream outfile("employees_updated.txt");
+
+    if (!outfile) {
+        cout << "Error: Cannot write to file!\n";
+        return 1;
+    }
+
+    for (int i = 0; i < employees.size(); i++) {
+        outfile << employees[i].getID() << " "
+                << employees[i].getName() << " "
+                << employees[i].getSalary() << endl;
+    }
+
+    outfile.close();
+
+    // Display updated records
+    cout << "\nUpdated Employee Records:\n";
+    for (int i = 0; i < employees.size(); i++) {
+        employees[i].display();
+    }
+
     return 0;
 }
-```
-
-SAMPLE OUTPUT :-
-```
-🏢 Employee Salary Management System
-✅ Loaded 3 employees from file
-
-1. Add Employee
-Enter ID: E004
-Enter Name: Sara Khan
-Enter Basic Salary: 55000
-✅ Employee added & salary calculated!
-ID: E004, Name: Sara Khan, Basic: ₹55000, Total: ₹71500
-
-=== ALL EMPLOYEES ===
-ID: E001, Name: John Doe, Basic: ₹50000, Total: ₹65000
-ID: E002, Name: Jane Smith, Basic: ₹60000, Total: ₹81000
-...
-💾 Data saved to employees.txt
-```
-
-CONCEPTS USED :-
-```
-✅ File I/O (Employee)
-✅ Exception Handling (Employee)
-✅ Static Methods (Employee)
-✅ Business Logic (Employee)
 ```
 
 
