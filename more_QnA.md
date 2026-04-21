@@ -2,7 +2,8 @@
 
 Scenario: You need to develop a student record management system for a college. The system should allow the addition of student records, modification, and display of records, as well as calculations like average grades.
 
-```#include <iostream>
+```
+#include <iostream>
 using namespace std;
 
 class Student {
