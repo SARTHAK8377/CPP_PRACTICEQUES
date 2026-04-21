@@ -2,7 +2,7 @@
 
 Scenario: You need to develop a student record management system for a college. The system should allow the addition of student records, modification, and display of records, as well as calculations like average grades.
 
-```
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -147,17 +147,6 @@ Enter ID: 101
 Enter Name: Sarthak
 Enter marks (3 subjects): 85 90 88
 ```
-
-CONCEPTS USED :-
-```
-✅ Classes & Objects
-✅ Encapsulation  
-✅ Inheritance (Student)
-✅ Polymorphism (Student)
-✅ Constructor/Method Overloading (Student)
-✅ Destructors (Student)
-```
-
 
 # Employee Salary Management System Using File Handling
 
