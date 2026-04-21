@@ -133,95 +133,69 @@ private:
     int employee_id;
     string name;
     float salary;
-
 public:
-    // Default Constructor
     Employee() {
         employee_id = 0;
         name = "Unknown";
         salary = 0;
     }
-
-    // Parameterized Constructor
     Employee(int id, string n, float s) {
         employee_id = id;
         name = n;
         salary = s;
     }
-
-    // Calculate Salary (Business Logic)
     void calculateSalary() {
         float bonus = 0.10 * salary;      // 10% bonus
         float deduction = 0.05 * salary;  // 5% deduction
         salary = salary + bonus - deduction;
     }
-
-    // Display Employee
     void display() {
         cout << "ID: " << employee_id 
              << ", Name: " << name 
              << ", Salary: " << salary << endl;
     }
-
-    // Getter methods
     int getID() { return employee_id; }
     string getName() { return name; }
     float getSalary() { return salary; }
-
-    // Setter for salary
     void setSalary(float s) { salary = s; }
 };
-
 int main() {
     vector<Employee> employees;
-
     ifstream infile("employees.txt");
-
     // Exception Handling (File Check)
     if (!infile) {
         cout << "Error: File not found or cannot be opened!\n";
         return 1;
     }
-
-    // Reading from file
     int id;
     string name;
     float salary;
-
     while (infile >> id >> name >> salary) {
         Employee emp(id, name, salary);
         employees.push_back(emp);
     }
-
     infile.close();
-
     // Processing salaries
     for (int i = 0; i < employees.size(); i++) {
         employees[i].calculateSalary();
     }
-
     // Writing updated data to file
     ofstream outfile("employees_updated.txt");
-
     if (!outfile) {
         cout << "Error: Cannot write to file!\n";
         return 1;
     }
-
     for (int i = 0; i < employees.size(); i++) {
         outfile << employees[i].getID() << " "
                 << employees[i].getName() << " "
                 << employees[i].getSalary() << endl;
     }
-
     outfile.close();
-
     // Display updated records
     cout << "\nUpdated Employee Records:\n";
     for (int i = 0; i < employees.size(); i++) {
         employees[i].display();
     }
-
     return 0;
 }
 ```
