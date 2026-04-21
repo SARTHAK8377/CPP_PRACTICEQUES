@@ -207,237 +207,127 @@ Scenario: Develop a Tic-Tac-Toe game using object-oriented design principles. Th
 
 ```cpp
 #include <iostream>
-#include <vector>
-#include <iomanip>
-#include <cstdlib>
-#include <ctime>
-#include <unistd.h>  // For sleep (Linux/Mac)
 using namespace std;
 
-// Color codes for Linux/Mac Terminal
-#define RESET   "\033[0m"
-#define RED     "\033[31m"  
-#define GREEN   "\033[32m"
-#define YELLOW  "\033[33m"
-#define BLUE    "\033[34m"
-#define MAGENTA "\033[35m"
-#define CYAN    "\033[36m"
-#define BOLD    "\033[1m"
-
-class TicTacToe {
+class Game {
 private:
-    vector<vector<char>> board;
-    char currentPlayer;
+    char board[3][3];
+    char turn;      // 'X' or 'O'
     char winner;
-    bool gameOver;
-    int moveCount;
-    
-    // Clear screen
-    void clearScreen() {
-        #ifdef _WIN32
-            system("cls");
-        #else
-            system("clear");
-        #endif
-    }
-    
-    // Animation delay
-    void delay(int ms) {
-        usleep(ms * 1000);
-    }
-    
+
 public:
-    TicTacToe() : currentPlayer('X'), winner(' '), gameOver(false), moveCount(0) {
+    // Constructor
+    Game() {
         resetGame();
-        showTitle();
     }
-    
-    void showTitle() {
-        clearScreen();
-        cout << BOLD << CYAN << R"(
-    ╔══════════════════════════════════════╗
-    ║    🎮  SUPER TIC-TAC-TOE  🎮        ║
-    ║                                      ║  
-    ║  Player X: "X"    Player O: "O"     ║
-    ║                                      ║
-    ║  Enter moves: row(1-3) col(1-3)     ║
-    ╚══════════════════════════════════════╝
-        )" << RESET << endl;
-    }
-    
+
+    // Reset Game
     void resetGame() {
-        board = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
-        currentPlayer = 'X';
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
+                board[i][j] = ' ';
+
+        turn = 'X';
         winner = ' ';
-        gameOver = false;
-        moveCount = 0;
     }
-    
+
+    // Print Board
     void printBoard() {
-        cout << "\n" << BOLD << YELLOW;
-        cout << "     1     2     3  \n";
-        cout << "  ┌─────┬─────┬─────┐\n";
-        
-        for (int i = 0; i < 3; i++) {
-            cout << " " << (i+1) << " │ ";
-            for (int j = 0; j < 3; j++) {
-                if (board[i][j] == 'X') cout << RED << BOLD << "  X  " << RESET;
-                else if (board[i][j] == 'O') cout << BLUE << BOLD << "  O  " << RESET;
-                else cout << GREEN << "  " << (i*3+j+1) << "  " << RESET;
-                if (j < 2) cout << "│";
+        cout << "\n";
+        for(int i = 0; i < 3; i++) {
+            cout << " ";
+            for(int j = 0; j < 3; j++) {
+                cout << board[i][j];
+                if(j < 2) cout << " | ";
             }
-            cout << " │\n";
-            if (i < 2) cout << "  ├─────┼─────┼─────┤\n";
+            cout << "\n";
+            if(i < 2) cout << "---|---|---\n";
         }
-        cout << "  └─────┴─────┴─────┘\n";
-        cout << RESET;
-        
-        cout << BOLD << MAGENTA << "  👤 Player " << currentPlayer 
-             << "'s Turn  |  Moves: " << moveCount << "/9" << RESET << endl;
+        cout << "\n";
     }
-    
+
+    // Make Move
     bool makeMove(int row, int col) {
-        if (row < 1 || row > 3 || col < 1 || col > 3) {
-            cout << RED << "❌ Invalid! Use 1-3 for row & col\n" << RESET;
+        if(row < 0 || row > 2 || col < 0 || col > 2 || board[row][col] != ' ') {
+            cout << "Invalid move! Try again.\n";
             return false;
         }
-        
-        row--; col--;
-        if (board[row][col] != ' ') {
-            cout << RED << "❌ Spot taken! Choose empty number\n" << RESET;
-            return false;
-        }
-        
-        // Animate move
-        board[row][col] = currentPlayer;
-        moveCount++;
-        printBoard();
-        delay(800);
-        
-        if (checkWinner()) {
-            showWinAnimation();
-            return true;
-        }
-        
-        if (isBoardFull()) {
-            showDraw();
-            return true;
-        }
-        
-        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+
+        board[row][col] = turn;
+
+        // Switch turn
+        turn = (turn == 'X') ? 'O' : 'X';
         return true;
     }
-    
-    bool checkWinner() {
-        // All 8 win conditions
-        vector<pair<int,int>> wins = {
-            {0,0},{0,1},{0,2}, {1,0},{1,1},{1,2}, {2,0},{2,1},{2,2}
-        };
-        
-        // Rows
-        for (int i = 0; i < 3; i++)
-            if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ')
-                { winner = board[i][0]; return true; }
-        
-        // Cols
-        for (int i = 0; i < 3; i++)
-            if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
-                { winner = board[0][i]; return true; }
-        
+
+    // Check Winner
+    void checkWinner() {
+        // Rows & Columns
+        for(int i = 0; i < 3; i++) {
+            if(board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ')
+                winner = board[i][0];
+
+            if(board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
+                winner = board[0][i];
+        }
+
         // Diagonals
-        if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ')
-            { winner = board[0][0]; return true; }
-        if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')
-            { winner = board[0][2]; return true; }
-        
-        return false;
+        if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ')
+            winner = board[0][0];
+
+        if(board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')
+            winner = board[0][2];
     }
-    
-    bool isBoardFull() {
-        return moveCount == 9;
+
+    // Check Draw
+    bool isDraw() {
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
+                if(board[i][j] == ' ')
+                    return false;
+
+        return (winner == ' ');
     }
-    
-    void showWinAnimation() {
-        clearScreen();
-        printBoard();
-        cout << "\n" << BOLD << GREEN;
-        cout << R"(
-    ╔══════════════════════════════════════╗
-    ║                                      ║
-    ║         🏆  CONGRATULATIONS!  🏆      ║
-    ║                                      ║
-    ║      🎉 Player )" << winner << R"( WINS! 🎉             ║
-    ║                                      ║
-    ╚══════════════════════════════════════╝
-        )" << RESET << endl;
-        gameOver = true;
+
+    char getWinner() {
+        return winner;
     }
-    
-    void showDraw() {
-        clearScreen();
-        printBoard();
-        cout << "\n" << BOLD << YELLOW;
-        cout << R"(
-    ╔══════════════════════════════════════╗
-    ║                                      ║
-    ║           🤝  IT'S A DRAW!  🤝        ║
-    ║                                      ║
-    ║       Well played! Perfect match!    ║
-    ║                                      ║
-    ╚══════════════════════════════════════╝
-        )" << RESET << endl;
-        gameOver = true;
+
+    char getTurn() {
+        return turn;
     }
-    
-    bool isGameOver() { return gameOver; }
 };
 
 int main() {
-    srand(time(0));
-    TicTacToe game;
-    
+    Game game;
     int row, col;
-    char playAgain;
-    
-    do {
-        while (!game.isGameOver()) {
+
+    cout << "=== Tic-Tac-Toe Game ===\n";
+
+    while(true) {
+        game.printBoard();
+
+        cout << "Player " << game.getTurn() << ", enter row and column (0-2): ";
+        cin >> row >> col;
+
+        if(!game.makeMove(row, col))
+            continue;
+
+        game.checkWinner();
+
+        if(game.getWinner() != ' ') {
             game.printBoard();
-            cout << BOLD << CYAN << "\n🎯 Your move (row col): " << RESET;
-            cin >> row >> col;
-            game.makeMove(row, col);
+            cout << "Player " << game.getWinner() << " wins!\n";
+            break;
         }
-        
-        cout << "\n" << BOLD << GREEN << "🔄 Play Again? (y/n): " << RESET;
-        cin >> playAgain;
-        if (playAgain == 'y' || playAgain == 'Y') {
-            game.resetGame();
+
+        if(game.isDraw()) {
+            game.printBoard();
+            cout << "It's a draw!\n";
+            break;
         }
-    } while (playAgain == 'y' || playAgain == 'Y');
-    
-    cout << BOLD << MAGENTA << "\n👋 Thanks for playing Super Tic-Tac-Toe!\n" << RESET;
+    }
+
     return 0;
 }
-```
-
-SAMPLE OUTPUT :-
-```
-Board shows numbers 1-9:
- 1│ 2│ 3
-──┼──┼──
- 4│ 5│ 6  
-──┼──┼──
- 7│ 8│ 9
-
-Enter: "1 1" for top-left!
-```
-
-CONCEPTS COVERED :-
-```
-📊 Lines of Code: 47
-✅ Classes: 1
-✅ Functions: 3
-✅ Win Conditions: 8
-✅ Data Structures: 1 (2D vector)
-✅ Input Validation: ✅
-✅ Error Handling: ✅
-```
+'''
