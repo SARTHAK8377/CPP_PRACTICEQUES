@@ -2,134 +2,149 @@
 
 Scenario: You need to develop a student record management system for a college. The system should allow the addition of student records, modification, and display of records, as well as calculations like average grades.
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-#include <iomanip>
+```#include <iostream>
 using namespace std;
 
 class Student {
-protected:
-    string roll, name;
-    vector<double> marks;
-    
-public:
-    // Constructor Overloading
-    Student() { cout << "Default ctor\n"; }
-    Student(string r, string n, vector<double> m) : roll(r), name(n), marks(m) {
-        cout << "Full ctor: " << n << endl;
-    }
-    Student(string r, string n) : roll(r), name(n) { cout << "Basic ctor: " << n << endl; }
-    
-    ~Student() { cout << "Dtor: " << name << endl; }
-    
-    // Method Overloading
-    void addStudent(string r, string n, vector<double> m) {
-        roll = r; name = n; marks = m; cout << "Added: " << n << endl;
-    }
-    void addStudent(string r, string n) { roll = r; name = n; cout << "Added basic: " << n << endl; }
-    
-    void modifyStudent(string n, vector<double> m) { name = n; marks = m; }
-    double calculateAverage() {
-        if (marks.empty()) return 0;
-        double sum = 0; for (double m : marks) sum += m;
-        return sum / marks.size();
-    }
-    virtual void display() {  // Virtual for polymorphism
-        cout << "\nRoll: " << roll << ", Name: " << name 
-             << ", Avg: " << fixed << setprecision(1) << calculateAverage() << endl;
-    }
-};
-
-class UGStudent : public Student {  // Inheritance
 private:
-    string branch;
-public:
-    UGStudent(string r, string n, vector<double> m, string b) 
-        : Student(r, n, m), branch(b) { cout << "UG ctor\n"; }
-    
-    void display() override {  // Polymorphism
-        cout << "UG - " << name << " (" << branch << "), Avg: " 
-             << fixed << setprecision(1) << calculateAverage() << endl;
-    }
-};
+    int id;
+    string name;
+    float marks[3];
 
-class StudentSystem {
-    vector<Student*> students;  // Polymorphic container
-    
 public:
-    ~StudentSystem() { 
-        for (auto s : students) delete s; 
-        cout << "System cleaned\n";
-    }
-    
-    void addStudent() {
-        string r, n, b; vector<double> m = {85, 90, 88};
-        cout << "Roll: "; cin >> r;
-        cout << "Name: "; cin.ignore(); getline(cin, n);
-        
-        Student* s = new UGStudent(r, n, m, "CSE");  // Dynamic allocation
-        students.push_back(s);
-        cout << "Student added!\n";
-    }
-    
-    void showAll() {
-        cout << "\n=== ALL STUDENTS ===\n";
-        for (int i = 0; i < students.size(); i++) {
-            cout << i+1 << ". "; students[i]->display();  // Dynamic dispatch
+    // Function to enter details
+    void setData() {
+        cout << "Enter ID: ";
+        cin >> id;
+
+        cout << "Enter Name: ";
+        cin >> name;
+
+        cout << "Enter marks (3 subjects): ";
+        for (int i = 0; i < 3; i++) {
+            cin >> marks[i];
         }
     }
-    
-    void classAverage() {
-        double avg = 0;
-        for (auto s : students) avg += s->calculateAverage();
-        cout << "Class Avg: " << fixed << setprecision(1) << avg/students.size() << endl;
+
+    // Function to display details
+    void displayData() {
+        cout << "\nID: " << id;
+        cout << "\nName: " << name;
+
+        cout << "\nMarks: ";
+        for (int i = 0; i < 3; i++) {
+            cout << marks[i] << " ";
+        }
+
+        cout << "\nAverage: " << calculateAverage() << endl;
+        cout << "----------------------\n";
+    }
+
+    // Function to calculate average
+    float calculateAverage() {
+        float sum = 0;
+        for (int i = 0; i < 3; i++) {
+            sum += marks[i];
+        }
+        return sum / 3;
+    }
+
+    // Function to return ID (for searching)
+    int getId() {
+        return id;
+    }
+
+    // Function to modify record
+    void modifyData() {
+        cout << "Enter new name: ";
+        cin >> name;
+
+        cout << "Enter new marks: ";
+        for (int i = 0; i < 3; i++) {
+            cin >> marks[i];
+        }
     }
 };
 
 int main() {
-    // Test constructors & overloading
-    vector<double> m1 = {85, 92, 78};
-    Student s1("001", "John", m1);
-    Student s2("002", "Jane");
-    s2.addStudent("002", "Jane", {88, 91, 87});
-    
-    s1.display(); s2.display();
-    
-    // Test inheritance & polymorphism
-    UGStudent ug("UG1", "Mike", {90, 88, 92}, "CSE");
-    ug.display();
-    
-    // Test management system
-    StudentSystem sys;
-    sys.addStudent(); sys.addStudent();
-    sys.showAll();
-    sys.classAverage();
-    
+    Student s[10];   // Array of objects
+    int count = 0;
+    int choice;
+
+    do {
+        cout << "\n===== MENU =====\n";
+        cout << "1. Add Student\n";
+        cout << "2. Modify Student\n";
+        cout << "3. Display All Students\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                if (count < 10) {
+                    s[count].setData();
+                    count++;
+                } else {
+                    cout << "Record limit reached!\n";
+                }
+                break;
+
+            case 2: {
+                int id, found = 0;
+                cout << "Enter ID to modify: ";
+                cin >> id;
+
+                for (int i = 0; i < count; i++) {
+                    if (s[i].getId() == id) {
+                        s[i].modifyData();
+                        found = 1;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    cout << "Student not found!\n";
+                }
+                break;
+            }
+
+            case 3:
+                if (count == 0) {
+                    cout << "No records available!\n";
+                } else {
+                    for (int i = 0; i < count; i++) {
+                        s[i].displayData();
+                    }
+                }
+                break;
+
+            case 4:
+                cout << "Exiting program...\n";
+                break;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while (choice != 4);
+
     return 0;
 }
 ```
 
 SAMPLE OUTPUT :-
 ```
-Full ctor: John
-Basic ctor: Jane
-Added basic: Jane
-Roll: 001, Name: John, Avg: 85.0
-Roll: 002, Name: Jane, Avg: 88.7
-UG ctor
-UG - Mike (CSE), Avg: 90.0
+===== MENU =====
+1. Add Student
+2. Modify Student
+3. Display All Students
+4. Exit
+Enter choice: 1
 
-=== ALL STUDENTS ===
-1. UG - [Name] (CSE), Avg: 87.7
-2. UG - [Name] (CSE), Avg: 87.7
-Class Avg: 87.7
-Dtor: John
-Dtor: Jane
-UG ctor
-Dtor: Mike
-System cleaned
+Enter ID: 101
+Enter Name: Sarthak
+Enter marks (3 subjects): 85 90 88
 ```
 
 CONCEPTS USED :-
