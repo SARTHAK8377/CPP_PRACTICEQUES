@@ -4,136 +4,119 @@ Scenario: You need to develop a student record management system for a college. 
 
 ```cpp
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class Student {
 private:
-    int id;
+    int roll_number;
     string name;
     float marks[3];
-
 public:
-    // Function to enter details
-    void setData() {
-        cout << "Enter ID: ";
-        cin >> id;
-
-        cout << "Enter Name: ";
-        cin >> name;
-
-        cout << "Enter marks (3 subjects): ";
-        for (int i = 0; i < 3; i++) {
-            cin >> marks[i];
-        }
+    // Default Constructor
+    Student() {
+        roll_number = 0;
+        name = "Unknown";
+        for(int i = 0; i < 3; i++) marks[i] = 0;
     }
-
-    // Function to display details
-    void displayData() {
-        cout << "\nID: " << id;
+    Student(int r, string n, float m[]) {
+        roll_number = r;
+        name = n;
+        for(int i = 0; i < 3; i++) marks[i] = m[i];
+    }
+    Student(int r) {
+        roll_number = r;
+        name = "Not Assigned";
+        for(int i = 0; i < 3; i++) marks[i] = 0;
+    }
+    // Destructor
+    ~Student() {
+    }
+    // Add Student (Method Overloading)
+    void addStudent(int r, string n, float m[]) {
+        roll_number = r;
+        name = n;
+        for(int i = 0; i < 3; i++) marks[i] = m[i];
+    }
+    void addStudent(int r) {
+        roll_number = r;
+        name = "Temporary";
+        for(int i = 0; i < 3; i++) marks[i] = 0;
+    }
+    // Modify Student
+    void modifyStudent(string newName, float newMarks[]) {
+        name = newName;
+        for(int i = 0; i < 3; i++) marks[i] = newMarks[i];
+    }
+    // Display Student
+    void displayStudent() {
+        cout << "\nRoll Number: " << roll_number;
         cout << "\nName: " << name;
-
         cout << "\nMarks: ";
-        for (int i = 0; i < 3; i++) {
+        for(int i = 0; i < 3; i++) {
             cout << marks[i] << " ";
         }
-
         cout << "\nAverage: " << calculateAverage() << endl;
-        cout << "----------------------\n";
     }
-
-    // Function to calculate average
+    // Calculate Average
     float calculateAverage() {
         float sum = 0;
-        for (int i = 0; i < 3; i++) {
-            sum += marks[i];
-        }
+        for(int i = 0; i < 3; i++) sum += marks[i];
         return sum / 3;
     }
-
-    // Function to return ID (for searching)
-    int getId() {
-        return id;
-    }
-
-    // Function to modify record
-    void modifyData() {
-        cout << "Enter new name: ";
-        cin >> name;
-
-        cout << "Enter new marks: ";
-        for (int i = 0; i < 3; i++) {
-            cin >> marks[i];
-        }
+    // Getter for roll number (for searching)
+    int getRoll() {
+        return roll_number;
     }
 };
-
 int main() {
-    Student s[10];   // Array of objects
-    int count = 0;
+    vector<Student> students;
     int choice;
-
     do {
-        cout << "\n===== MENU =====\n";
-        cout << "1. Add Student\n";
-        cout << "2. Modify Student\n";
-        cout << "3. Display All Students\n";
-        cout << "4. Exit\n";
+        cout << "\n--- Student Record System ---\n";
+        cout << "1. Add Student\n2. Modify Student\n3. Display All\n4. Exit\n";
         cout << "Enter choice: ";
         cin >> choice;
-
-        switch (choice) {
-            case 1:
-                if (count < 10) {
-                    s[count].setData();
-                    count++;
-                } else {
-                    cout << "Record limit reached!\n";
-                }
-                break;
-
-            case 2: {
-                int id, found = 0;
-                cout << "Enter ID to modify: ";
-                cin >> id;
-
-                for (int i = 0; i < count; i++) {
-                    if (s[i].getId() == id) {
-                        s[i].modifyData();
-                        found = 1;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    cout << "Student not found!\n";
-                }
-                break;
-            }
-
-            case 3:
-                if (count == 0) {
-                    cout << "No records available!\n";
-                } else {
-                    for (int i = 0; i < count; i++) {
-                        s[i].displayData();
-                    }
-                }
-                break;
-
-            case 4:
-                cout << "Exiting program...\n";
-                break;
-
-            default:
-                cout << "Invalid choice!\n";
+        if(choice == 1) {
+            int r;
+            string n;
+            float m[3];
+            cout << "Enter Roll Number: ";
+            cin >> r;
+            cout << "Enter Name: ";
+            cin >> n;
+            cout << "Enter 3 Marks: ";
+            for(int i = 0; i < 3; i++) cin >> m[i];
+            Student s(r, n, m);
+            students.push_back(s);
         }
+        else if(choice == 2) {
+            int r;
+            cout << "Enter Roll Number to modify: ";
+            cin >> r;
+            for(int i = 0; i < students.size(); i++) {
+                if(students[i].getRoll() == r) {
+                    string n;
+                    float m[3];
+                    cout << "Enter New Name: ";
+                    cin >> n;
+                    cout << "Enter New Marks: ";
+                    for(int j = 0; j < 3; j++) cin >> m[j];
 
-    } while (choice != 4);
+                    students[i].modifyStudent(n, m);
+                }
+            }
+        }
+        else if(choice == 3) {
+            for(int i = 0; i < students.size(); i++) {
+                students[i].displayStudent();
+            }
+        }
+    } while(choice != 4);
 
     return 0;
 }
 ```
-
 SAMPLE OUTPUT :-
 ```
 ===== MENU =====
