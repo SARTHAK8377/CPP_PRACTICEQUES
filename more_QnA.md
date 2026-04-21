@@ -212,26 +212,19 @@ using namespace std;
 class Game {
 private:
     char board[3][3];
-    char turn;      // 'X' or 'O'
+    char turn;     
     char winner;
-
 public:
-    // Constructor
     Game() {
         resetGame();
     }
-
-    // Reset Game
     void resetGame() {
         for(int i = 0; i < 3; i++)
             for(int j = 0; j < 3; j++)
                 board[i][j] = ' ';
-
         turn = 'X';
         winner = ' ';
     }
-
-    // Print Board
     void printBoard() {
         cout << "\n";
         for(int i = 0; i < 3; i++) {
@@ -245,22 +238,15 @@ public:
         }
         cout << "\n";
     }
-
-    // Make Move
     bool makeMove(int row, int col) {
         if(row < 0 || row > 2 || col < 0 || col > 2 || board[row][col] != ' ') {
             cout << "Invalid move! Try again.\n";
             return false;
         }
-
         board[row][col] = turn;
-
-        // Switch turn
         turn = (turn == 'X') ? 'O' : 'X';
         return true;
     }
-
-    // Check Winner
     void checkWinner() {
         // Rows & Columns
         for(int i = 0; i < 3; i++) {
@@ -270,64 +256,48 @@ public:
             if(board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
                 winner = board[0][i];
         }
-
-        // Diagonals
         if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ')
             winner = board[0][0];
 
         if(board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')
             winner = board[0][2];
     }
-
-    // Check Draw
     bool isDraw() {
         for(int i = 0; i < 3; i++)
             for(int j = 0; j < 3; j++)
                 if(board[i][j] == ' ')
                     return false;
-
         return (winner == ' ');
     }
-
     char getWinner() {
         return winner;
     }
-
     char getTurn() {
         return turn;
     }
 };
-
 int main() {
     Game game;
     int row, col;
-
     cout << "=== Tic-Tac-Toe Game ===\n";
-
     while(true) {
         game.printBoard();
-
         cout << "Player " << game.getTurn() << ", enter row and column (0-2): ";
         cin >> row >> col;
-
         if(!game.makeMove(row, col))
             continue;
-
         game.checkWinner();
-
         if(game.getWinner() != ' ') {
             game.printBoard();
             cout << "Player " << game.getWinner() << " wins!\n";
             break;
         }
-
         if(game.isDraw()) {
             game.printBoard();
             cout << "It's a draw!\n";
             break;
         }
     }
-
     return 0;
 }
 '''
